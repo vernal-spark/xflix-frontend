@@ -104,7 +104,7 @@ const VideoUpload = () => {
   const handleVideoLink=(link)=>{
     const url=new URL(link)
     const videoParam=url.searchParams.get('v')
-    const vLink=`youtube.com/embed/${videoParam}`
+    const vLink=`https://www.youtube.com/embed/${videoParam}`
     setVideoLink(vLink)
   }
 

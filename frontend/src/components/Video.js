@@ -2,6 +2,7 @@ import { Box ,Stack,Typography,Button} from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import axios from "axios";
+import {useEffect } from 'react'
 import "./Video.css";
 import { useSnackbar } from "notistack";
 const Video = ({video,upVote,downVote,setUpVote,setDownVote}) => {
