@@ -11,6 +11,7 @@ import {
   FormControl,
   Modal
 } from "@mui/material";
+import {config} from '../App'
 import dayjs from "dayjs";
 import axios from 'axios'
 import UploadIcon from "@mui/icons-material/Upload";
@@ -65,6 +66,7 @@ const CssTextField = styled(TextField)({
     },
   },
 });
+
 const VideoUpload = () => {
   const{enqueueSnackbar}=useSnackbar()
   const [open, setOpen] = useState(false);
@@ -89,13 +91,29 @@ const VideoUpload = () => {
 
   const container = {
     position: "relative",
-    width: "402px",
-    left: "40%",
-    top: "20%",
+    width: "20rem",
+    left: "50rem",
+    top: "15vh",
     background: "#181818",
     padding: "12px",
     color: "white",
     borderRadius: "4px",
+    '@media screen and (max-width:1700px)':{
+      position: "relative",
+      left:'25rem',
+      top:'15vh'
+    },
+    '@media screen and (max-width:991px)':{
+      position: "relative",
+      left:'18rem',
+      top:'15vh'
+    },
+    '@media screen and (max-width:767px)':{
+      width: "15rem",
+      position: "relative",
+      left:'0rem',
+      top:0
+    }
   };
 
   const handleOpen = () => setOpen(true);
@@ -104,7 +122,7 @@ const VideoUpload = () => {
   const handleVideoLink=(link)=>{
     const url=new URL(link)
     const videoParam=url.searchParams.get('v')
-    const vLink=`https://www.youtube.com/embed/${videoParam}`
+    const vLink=`youtube.com/embed/${videoParam}`
     setVideoLink(vLink)
   }
 
@@ -145,7 +163,7 @@ const VideoUpload = () => {
     };
     if(body.videoLink && body.title && body.genre && body.contentRating  && body.releaseDate && body.previewImage){
       try{
-        await axios.post(`https://xflix-backend-0qye.onrender.com/v1/videos/`,body,{
+        await axios.post(`${config.endpoint}v1/videos/`,body,{
           headers: {
               "Content-Type": "application/json",
           },
@@ -172,7 +190,7 @@ const VideoUpload = () => {
         <UploadIcon />
         Upload
       </Button>
-      <Modal open={open}>
+      <Modal open={open} >
         <Box sx={container}>
           <Stack
             direction="row"

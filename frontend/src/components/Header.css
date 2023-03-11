@@ -4,9 +4,19 @@
     display:flex;
     justify-content: space-between;
     align-items: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
 }
-.searchbox{
-   background-color: black;
+.search-mobile{
+    display: none !important;
+}
+.search-desktop{
+    display: block !important;
+}
+
+@media screen and (max-width:790px){
+    .search-desktop{
+        display:none !important;
+    }
+    .search-mobile{
+        display: block !important;
+    }
 }
