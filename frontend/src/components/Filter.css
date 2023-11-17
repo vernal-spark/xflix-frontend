@@ -19,6 +19,18 @@
   justify-content: space-between;
   gap: 1rem;
 }
+.selected {
+  border-radius:15px;
+  height:2rem;
+  color:'black';
+  background-color:'white'
+}
+.not-selected {
+  border-right-color:15px;
+    height:2rem;
+    color:'white';
+    background-color:'#202020';
+}
 
 @media only screen and (max-width: 790px) {
   .filter {
