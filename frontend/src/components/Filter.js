@@ -4,16 +4,31 @@ import "./Filter.css";
 const Filter = ({updateGenreFilter,genreFilter,ageFilter,updateAgeFilter,sortFilter,updateSortFilter}) => {
 
   const updateGenre=(genre)=>{
-    if(genreFilter.includes(genre)){
-      const index=genreFilter.indexOf(genre)
-      console.log(genreFilter)
-      genreFilter.splice(index,1)
-      updateGenreFilter([...genreFilter])
+    if(genre==='All'){
+      updateGenreFilter(['All'])
     }
     else{
-      // console.log(genreFilter)
-      updateGenreFilter([...genreFilter,genre])
-      // console.log(genreFilter)
+      if(genreFilter.includes('All')){
+        
+        updateGenreFilter(prev=>{
+          const index=prev.indexOf(genre)
+        prev.splice(index,1)
+          return [...prev]
+        })
+      }
+      if(genreFilter.includes(genre)){
+        const index=genreFilter.indexOf(genre)
+        genreFilter.splice(index,1)
+        if(genreFilter.length===0){
+          updateGenreFilter(['All']);
+        }
+        else{
+          updateGenreFilter([...genreFilter])
+        }
+      }
+      else{
+        updateGenreFilter(prev=>[...prev,genre])
+      }
     }
   }
 
@@ -26,25 +41,6 @@ const Filter = ({updateGenreFilter,genreFilter,ageFilter,updateAgeFilter,sortFil
     }
   }
 
-  const dropdown = {
-    "&.MuiInputBase-root": {
-      "& .MuiSvgIcon-root": {
-        color: "white",
-      },
-      "& .MuiSelect-select": {
-        color: "white",
-      },
-      "& fieldset": {
-        borderColor: "#808080",
-      },
-      "&:hover fieldset": {
-        borderColor: "white",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
-    },
-  };
 
   const selected={
     borderRadius:'15px',
