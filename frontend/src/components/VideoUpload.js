@@ -9,11 +9,12 @@ import {
   Select,
   MenuItem,
   FormControl,
-  Modal
+  Modal,
+  FormSelect,
 } from "@mui/material";
-import {config} from '../App'
+import { config } from "../App";
 import dayjs from "dayjs";
-import axios from 'axios'
+import axios from "axios";
 import UploadIcon from "@mui/icons-material/Upload";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -67,16 +68,38 @@ const CssTextField = styled(TextField)({
   },
 });
 
-const VideoUpload = () => {
-  const{enqueueSnackbar}=useSnackbar()
+const years = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "June",
+  "July",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+const VideoUpload = ({ defaultApiCall }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
+  const [platform, setPlatform] = useState("");
   const [videoLink, setVideoLink] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [title, setTitle] = useState("");
   const [genre, setGenre] = useState("");
   const [age, setAge] = useState("");
-  const [date, setDate] = useState("");
-  const[value,setValue]=useState(dayjs("2022-04-17"))
+  const [date, setDate] = useState(
+    new Date().getDate() +
+      " " +
+      years[new Date().getMonth()] +
+      " " +
+      new Date().getFullYear()
+  );
+  const [value, setValue] = useState(dayjs(new Date()));
 
   const genreArr = [
     "Education",
@@ -89,6 +112,19 @@ const VideoUpload = () => {
 
   const ageArr = ["Anyone", "7+", "12+", "16+", "18+"];
 
+  const platformArr = ["youtube", "vimeo"];
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "20rem",
+    bgcolor: "#181818",
+    boxShadow: 24,
+    p: 4,
+    color: "white",
+  };
   const container = {
     position: "relative",
     width: "20rem",
@@ -98,61 +134,72 @@ const VideoUpload = () => {
     padding: "12px",
     color: "white",
     borderRadius: "4px",
-    '@media screen and (max-width:1700px)':{
+    "@media screen and (max-width:1700px)": {
       position: "relative",
-      left:'25rem',
-      top:'15vh'
+      left: "25rem",
+      top: "15vh",
     },
-    '@media screen and (max-width:991px)':{
+    "@media screen and (max-width:991px)": {
       position: "relative",
-      left:'18rem',
-      top:'15vh'
+      left: "18rem",
+      top: "15vh",
     },
-    '@media screen and (max-width:767px)':{
-      width: "15rem",
+    "@media screen and (max-width:767px)": {
       position: "relative",
-      left:'0rem',
-      top:0
-    }
+      left: "3.1rem",
+      top: 0,
+    },
   };
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setPlatform("");
+    setVideoLink("");
+    setPreviewImage("");
+    setTitle("");
+    setAge("");
+    setGenre("");
+    setDate(
+      new Date().getDate() +
+        " " +
+        years[new Date().getMonth()] +
+        " " +
+        new Date().getFullYear()
+    );
+    setOpen(false);
+  };
 
-  const handleVideoLink=(link)=>{
-    const url=new URL(link)
-    const videoParam=url.searchParams.get('v')
-    const vLink=`youtube.com/embed/${videoParam}`
-    setVideoLink(vLink)
-  }
+  const handleVideoLink = (link) => {
+    if (platform === "") {
+      setVideoLink("");
+      enqueueSnackbar("Enter the Platform", { variant: "warning" });
+    }
+    const url = new URL(link);
+    let vLink, pImage;
+    if (platform === "youtube") {
+      const videoParam = url.searchParams.get("v");
+      vLink = `youtube.com/embed/${videoParam}`;
+      pImage = `https://i.ytimg.com/vi/${videoParam}/mqdefault.jpg`;
+    } else if (platform === "vimeo") {
+      const videoParam = url.pathname.substr(1);
+      vLink = `https://player.vimeo.com/video/${videoParam}`;
+      pImage = `https://vumbnail.com//${videoParam}.jpg`;
+      console.log(vLink);
+    }
+    setPreviewImage(pImage);
+    setVideoLink(vLink);
+  };
 
   const handleDateChange = (newValue) => {
-    console.log(newValue.month())
-    setValue(newValue)
-    const years = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "June",
-        "July",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ]
-
+    setValue(newValue);
     const date = newValue.date();
     const month = years[newValue.month()];
     const fullYear = newValue.year();
-    const dateString = date + " " + month + " " + fullYear;  
-    setDate(dateString) 
-    console.log(dateString)
-}
+    const dateString = date + " " + month + " " + fullYear;
+    setDate(dateString);
+  };
 
-  const uploadVideo = async() => {
+  const uploadVideo = async () => {
     const body = {
       videoLink: videoLink,
       title: title,
@@ -161,27 +208,32 @@ const VideoUpload = () => {
       releaseDate: date,
       previewImage: previewImage,
     };
-    if(body.videoLink && body.title && body.genre && body.contentRating  && body.releaseDate && body.previewImage){
-      try{
-        await axios.post(`${config.endpoint}v1/videos/`,body,{
+    if (
+      body.videoLink &&
+      body.title &&
+      body.genre &&
+      body.contentRating &&
+      body.releaseDate &&
+      body.previewImage
+    ) {
+      try {
+        await axios.post(`${config.endpoint}v1/videos/`, body, {
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
-      });
+        });
         handleClose();
-        enqueueSnackbar("Uploaded Successfully", { variant: "success" })
-      }catch(e){
-        enqueueSnackbar(e.response.data.message, { variant: "error" })
+        defaultApiCall();
+        enqueueSnackbar("Uploaded Successfully", { variant: "success" });
+      } catch (e) {
+        console.log(e);
+        enqueueSnackbar(e.response.data.message, { variant: "error" });
       }
-      
+    } else if (!body.videoLink) {
+      enqueueSnackbar("link must be a valid url", { variant: "warning" });
+    } else {
+      enqueueSnackbar("All fields are required", { variant: "warning" });
     }
-    else if (!body.videoLink) {
-      enqueueSnackbar("link must be a valid url", { variant: "warning" })
-    }
-    else {
-      enqueueSnackbar("All fields are required", { variant: "warning" })
-    }
-    
   };
 
   return (
@@ -190,8 +242,8 @@ const VideoUpload = () => {
         <UploadIcon />
         Upload
       </Button>
-      <Modal open={open} >
-        <Box sx={container}>
+      <Modal open={open}>
+        <Box sx={style}>
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -205,6 +257,39 @@ const VideoUpload = () => {
           </Stack>
           <Stack direction="column" spacing={2}>
             <Box>
+              <FormControl fullWidth>
+                <InputLabel
+                  id="select-label"
+                  sx={{
+                    "&.MuiInputLabel-root": {
+                      color: "white",
+                      borderColor: "white",
+                    },
+                  }}
+                >
+                  Platform
+                </InputLabel>
+                <Select
+                  sx={dropdown}
+                  labelId="select-label"
+                  id="demo-simple-select"
+                  value={platform}
+                  label="Platform"
+                  onChange={(e) => setPlatform(e.target.value)}
+                  required
+                >
+                  {platformArr.map((item) => (
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Typography variant="caption">
+                Enter the platfrom from which you are taking the video
+              </Typography>
+            </Box>
+            <Box>
               <CssTextField
                 fullWidth
                 label="Video Link"
@@ -215,7 +300,7 @@ const VideoUpload = () => {
                 This link will used to derive the video
               </Typography>
             </Box>
-            <Box>
+            {/* <Box>
               <CssTextField
                 fullWidth
                 InputProps={{ style: { color: "white" } }}
@@ -225,7 +310,7 @@ const VideoUpload = () => {
               <Typography variant="caption">
                 This link will be used to preview the thumbnail image
               </Typography>
-            </Box>
+            </Box> */}
             <Box>
               <CssTextField
                 fullWidth
@@ -260,7 +345,9 @@ const VideoUpload = () => {
                   required
                 >
                   {genreArr.map((item) => (
-                    <MenuItem key={item} value={item}>{item}</MenuItem>
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -291,7 +378,9 @@ const VideoUpload = () => {
                   required
                 >
                   {ageArr.map((item) => (
-                    <MenuItem key={item} value={item}>{item}</MenuItem>
+                    <MenuItem key={item} value={item}>
+                      {item}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
@@ -348,7 +437,9 @@ const VideoUpload = () => {
             >
               Upload Video
             </Button>
-            <Button sx={{ color: "#808080" }} onClick={handleClose}>Cancel</Button>
+            <Button sx={{ color: "#808080" }} onClick={handleClose}>
+              Cancel
+            </Button>
           </Stack>
         </Box>
       </Modal>

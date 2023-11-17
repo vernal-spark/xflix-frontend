@@ -1,5 +1,5 @@
 import { Box, InputAdornment, Button, TextField, styled } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import logo from "../logo.svg";
 import "./Header.css";
 import VideoUpload from "./VideoUpload";
@@ -24,7 +24,7 @@ const CssTextField = styled(TextField)({
     },
   },
 });
-const Header = ({ search, setSearch, videoPage }) => {
+const Header = ({ search, setSearch, videoPage, defaultApiCall }) => {
   return (
     <>
       <Box className="header">
@@ -35,21 +35,29 @@ const Header = ({ search, setSearch, videoPage }) => {
           <>
             <CssTextField
               placeholder="Search"
-              className='search-desktop'
+              className="search-desktop"
               InputProps={{
                 style: {
+                  paddingRight: 0,
                   fontFamily: "Arial",
                   border: "1px solid grey",
                   background: "#121212",
                   color: "grey",
-                  borderColor: "white",
+                  borderColor: "grey.900",
                   width: "100%",
                   height: "29px",
                 },
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Button sx={{ color: "white", height: "29px" }}>
-                      <SearchIcon color="white" />
+                    <Button
+                      sx={{
+                        bgcolor: "grey.900",
+                        color: "white",
+                        height: "27px",
+                        pr: 0,
+                      }}
+                    >
+                      <SearchRoundedIcon color="white" />
                     </Button>
                   </InputAdornment>
                 ),
@@ -57,36 +65,45 @@ const Header = ({ search, setSearch, videoPage }) => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-            <VideoUpload />
+            <VideoUpload defaultApiCall={defaultApiCall} />
           </>
         )}
       </Box>
-      {!videoPage &&
-      <CssTextField
-        placeholder="Search"
-        className='search-mobile'
-        fullWidth
-        InputProps={{
-          style: {
-            fontFamily: "Arial",
-            border: "1px solid grey",
-            background: "#121212",
-            color: "grey",
-            borderColor: "white",
-            width: "100%",
-            height: "29px",
-          },
-          endAdornment: (
-            <InputAdornment position="end">
-              <Button sx={{ color: "white", height: "29px" }}>
-                <SearchIcon color="white" />
-              </Button>
-            </InputAdornment>
-          ),
-        }}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />}
+      {!videoPage && (
+        <CssTextField
+          placeholder="Search"
+          className="search-mobile"
+          fullWidth
+          InputProps={{
+            style: {
+              paddingRight: 0,
+              fontFamily: "Arial",
+              border: "1px solid grey",
+              background: "#121212",
+              color: "grey",
+              borderColor: "white",
+              width: "100%",
+              height: "29px",
+            },
+            endAdornment: (
+              <InputAdornment position="end">
+                <Button
+                  sx={{
+                    bgcolor: "white",
+                    color: "black",
+                    height: "27px",
+                    paddingRight: 0,
+                  }}
+                >
+                  <SearchRoundedIcon color="white" />
+                </Button>
+              </InputAdornment>
+            ),
+          }}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      )}
     </>
   );
 };
